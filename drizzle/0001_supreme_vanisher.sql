@@ -1,0 +1,1 @@
+ALTER TABLE `tuf-banner_Users` MODIFY COLUMN `id` char(36) NOT NULL;

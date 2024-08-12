@@ -6,11 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { verifyAuth } from "@/lib/utils";
 
 /**
  * 1. CONTEXT
@@ -96,6 +97,32 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const authMiddleware = t.middleware(async ({ next, path, ctx }) => {
+  const token = ctx.headers.get("Authorization")?.replace("Bearer ", "");
+  if (!token) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  try {
+    const verified = await verifyAuth(token);
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: verified.userId,
+      },
+    });
+  } catch (err) {
+    const Error = err as { code?: string; reason?: string };
+    if (Error.code === "ERR_JWT_EXPIRED") {
+      console.error(`JWT Verification Error: ${Error.code} - ${Error?.reason}`);
+    } else {
+      console.error("JWT Verification Error:", err);
+    }
+
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -104,3 +131,4 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+export const protectedProcedure = publicProcedure.use(authMiddleware);

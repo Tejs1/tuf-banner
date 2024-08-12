@@ -1,0 +1,20 @@
+{
+  "version": "6",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1723479301117,
+      "tag": "0000_even_darkstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1723480107127,
+      "tag": "0001_supreme_vanisher",
+      "breakpoints": true
+    }
+  ]
+}

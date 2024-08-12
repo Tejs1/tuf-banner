@@ -15,6 +15,13 @@
       "when": 1723480107127,
       "tag": "0001_supreme_vanisher",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1723484442595,
+      "tag": "0002_nosy_famine",
+      "breakpoints": true
     }
   ]
 }
